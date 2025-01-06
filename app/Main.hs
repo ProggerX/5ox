@@ -1,6 +1,7 @@
 module Main where
 
 import App (run)
+import System.Environment
 import System.IO (
   BufferMode (NoBuffering),
   hSetBinaryMode,
@@ -17,4 +18,5 @@ main = do
   hSetBuffering stdout NoBuffering
   hSetBinaryMode stdout True
 
-  run
+  args :: [Int] <- fmap read <$> getArgs
+  if length args == 1 then run $ args !! 0 else putStrLn "Expected one argument - difficulty (1-3 is recommended)"

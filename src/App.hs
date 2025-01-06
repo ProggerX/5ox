@@ -1,9 +1,14 @@
+{-# LANGUAGE OverloadedRecordDot #-}
+
 module App where
 
+import Control.Monad (unless, when)
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Control.Monad.State (MonadState, StateT, evalStateT, get)
-import GameLogic (GameState, playerTurn)
+import GameLogic (GameState (..), Status (..), aiTurnStep, checkGameOver, playerTurnStep)
 import Init (createState)
+import Render (render)
+import System.Random (getStdGen)
 
 newtype App m a = App {runApp :: StateT GameState m a}
   deriving
@@ -17,11 +22,23 @@ newtype App m a = App {runApp :: StateT GameState m a}
 gameloop :: (MonadState GameState m, MonadIO m) => m ()
 gameloop = do
   st <- get
-  liftIO $ print st
-  playerTurn
+  render
+  if st.status == PlayerTurn then playerTurnStep else aiTurnStep
+  render
+  checkGameOver
   st' <- get
-  liftIO $ print st'
+  unless st'.gameOver gameloop
+  liftIO $
+    when st'.gameOver $
+      putStrLn
+        ( case st'.status of
+            Win -> "You win!"
+            Loss -> "You've lost!"
+            Draw -> "Draw! Not bad!"
+            _ -> ""
+        )
 
-run :: IO ()
-run = do
-  (`evalStateT` createState) $ runApp gameloop
+run :: Int -> IO ()
+run d = do
+  gen <- getStdGen
+  (`evalStateT` createState gen d) $ runApp gameloop
