@@ -19,4 +19,4 @@ main = do
   hSetBinaryMode stdout True
 
   args :: [Int] <- fmap read <$> getArgs
-  if length args == 1 then run $ args !! 0 else putStrLn "Expected one argument - difficulty (1-3 is recommended)"
+  if length args == 1 then run $ head args else putStrLn "Expected one argument - difficulty (1-3 is recommended)"
