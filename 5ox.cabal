@@ -1,0 +1,39 @@
+cabal-version:      3.0
+name:               5ox
+version:            0.1.0.0
+description:        Simple XO game in haskell
+homepage:           https://github.com/ProggerX/5ox
+license:            GPL-3.0-only
+license-file:       LICENSE
+author:             ProggerX
+maintainer:         x@proggers.ru
+category:           Game
+build-type:         Simple
+
+common warnings
+  ghc-options:      -Wall
+
+library
+  import:           warnings
+  exposed-modules:
+    GameLogic
+    , Render
+    , App
+    , Events
+    , Init
+  build-depends:
+    base ^>=4.18.2.1
+    , mtl
+    , array
+  hs-source-dirs:   src
+  default-language: GHC2021
+
+executable 5ox
+  import:           warnings
+  main-is:          Main.hs
+  build-depends:
+    base ^>=4.18.2.1,
+    5ox
+
+  hs-source-dirs:   app
+  default-language: GHC2021
