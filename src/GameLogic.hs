@@ -50,9 +50,11 @@ playerTurnStep = do
 aiTurnStep :: (MonadState GameState m) => m ()
 aiTurnStep = do
   st@GameState{board, difficulty, botDefend, botAttack} <- get
-  let profits = sort $ map (cellProfit board botDefend botAttack) (indices board)
-  let pts = take difficulty $ reverse $ map snd profits
-  let (i, randomGen) = randomR (0, difficulty - 1) st.randomGen
+  let profits = reverse $ filter (\x -> (board ! x) == Empty) $ map snd $ sort $ map (cellProfit board botDefend botAttack) (indices board)
+  let difficulty' = min difficulty $ length profits
+  put st{difficulty = difficulty'}
+  let pts = take difficulty' profits
+  let (i, randomGen) = randomR (0, difficulty' - 1) st.randomGen
   let pt = pts !! i
   put st{board = board // [(pt, O)], status = PlayerTurn, randomGen}
 
@@ -67,7 +69,6 @@ diagonal2 = [(x, 6 - x) | x <- [1 .. 5]]
 cellProfit :: Board -> Int -> Int -> Point -> (Int, Point)
 cellProfit brd def atk pt@(y, x) =
   ( if
-      | brd ! pt /= Empty -> (-1)
       | y == x && y == 6 - x -> 10000
       | y == x ->
           let (vx, vo) = calculate brd $ vertical x
