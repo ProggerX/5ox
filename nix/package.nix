@@ -1,2 +1,5 @@
 { pkgs, isShell ? false}:
-pkgs.haskellPackages.developPackage { root = ../.; returnShellEnv = isShell; }
+pkgs.haskell.packages.ghc984.developPackage {
+	root = ../.;
+	returnShellEnv = isShell;
+}
